@@ -38,7 +38,7 @@ module Jekyll::T4J
             setup_dvisvgm
         end
 
-        def self.render(snippets, merger)
+        def self.render(snippets, merger, site)
             gen_svg = ->(svg, displayMode) {
                 "<embed src=\"#{merger.(svg, ".svg")}\" style=\"height:#{
                     (svg[/height='(\S+?)pt'/, 1].to_f * 0.1).round(4)
@@ -47,14 +47,13 @@ module Jekyll::T4J
                 }\">"
             }
             gen_mathml = ->(mathml) {
-                "<include src=\"#{merger.(mathml, ".xml")}\"></include>"
+                "<include src=\"#{site.config["baseurl"] + merger.(mathml, ".xml")}\"></include>"
             }
 
             # 'snippets' << caches
             uncached = {} #act as hash set
             snippets.each_with_index do |s, i|
                 r = nil
-
                 begin
                     r = gen_mathml.(@@cache_katex[s.source])
                 rescue
@@ -79,13 +78,12 @@ module Jekyll::T4J
 
             # 'snippets' << rendering results
             uncached = {} #act as hash set again
-            snippets.each_with_index do |s, i|
-                next if !s.is_a?(Snippet)
-
-                begin
-                    snippets[i] = gen_mathml.(@@cache_katex[s.source])
-                rescue
-                    uncached[s] = nil
+                snippets.each_with_index do |s, i|
+                    next if !s.is_a?(Snippet)
+                        begin
+                            snippets[i] = gen_mathml.(@@cache_katex[s.source])
+                        rescue
+                            uncached[s] = nil
                 end
             end
 

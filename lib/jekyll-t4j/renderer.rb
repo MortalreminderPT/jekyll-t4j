@@ -94,7 +94,7 @@ module Jekyll::T4J
         end
 
         # render 'snippets'
-        Jekyll::T4J::Engine.render(snippets, ->(data, extname) {Jekyll::T4J::Merger.ask_for_merge(data, extname)})
+        Jekyll::T4J::Engine.render(snippets, ->(data, extname) {Jekyll::T4J::Merger.ask_for_merge(data, extname)}, site)
 
         # 'snippets' -> 'docs'
         i = 0
